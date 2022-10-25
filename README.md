@@ -1,3 +1,9 @@
 # MBSE
 
-First commit test
+Pollution Simulation dependencies
+=======================
+- pygame
+- numpy
+- perlin_noise
+
+
