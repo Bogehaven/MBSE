@@ -21,3 +21,6 @@ For example:  `python vehicle_dist.py 'osm.passenger.trip.xml' '{"gas": 0.6, "hy
 ### Documentations
 - SUMO Emissions: https://github.com/eclipse/sumo/blob/main/docs/web/docs/Models/Emissions.md
 - SUMO Emission Types: https://github.com/eclipse/sumo/blob/main/docs/web/docs/Models/Emissions/HBEFA4-based.md
+
+### To-Do
+- Export emissions from SUMO to Python
