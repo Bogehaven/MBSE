@@ -20,6 +20,9 @@ isPolutionContained = False
 windMagnitued = 0.1
 windPerlinNoiseStep = 2.0
 simulationPaused = False
+perlinWind = False
+noWind = False
+uniWind = False
 # ===========================
 
 # Buffers to store pollution
@@ -54,6 +57,21 @@ class WindGenerator:
         xx = (x / mapWidth) * windPerlinNoiseStep
         yy = (y / mapHeight) * windPerlinNoiseStep
         return (self.xnoise([xx, yy, t]) * speed, self.ynoise([xx, yy, t]) * speed)
+
+# Choose what wind pattern we want to use #
+print("Which wind pattern you would like to use ?")
+print("Press [1] for No wind")
+print("Press [2] for uniform wind")
+print("Press [3] for random perlin_noise wind")
+
+readNum = input()
+
+if readNum == '1':
+    noWind = True
+elif readNum == '2':
+    uniWind = True
+elif readNum == '3':
+    perlinWind = True
 
 # Generate some random wind pattern
 windgen = WindGenerator()
@@ -160,18 +178,19 @@ while running:
             if (buffers[x, y, nextBuffer] != 0):
                 pygame.draw.rect(pollutionSurface, (255 * min(1.0, buffers[x, y, currentBuffer]), 0, 0, 200 * min(1.0, buffers[x, y, currentBuffer])), (x * cellSize, y * cellSize, cellSize, cellSize))
 
-            # draw wind vectors
-            if (showWindVectors):
-                wind = (windVectors[x, y, 0], windVectors[x, y, 1])
-                # normalize wind vector
-                windSpeed = math.sqrt(wind[0]*wind[0] + wind[1]*wind[1])
-                
-                # draw wind vector
-                if (windSpeed != 0.0):
-                    windVec = ((wind[0] / windSpeed) * cellSize/2, (wind[1] / windSpeed) * cellSize/2)
-                    pygame.draw.line(pollutionSurface, (0, 0, 255),
-                            (x * cellSize + cellSize/2, y * cellSize + cellSize/2),
-                            (x * cellSize + cellSize/2 + windVec[0], y * cellSize + cellSize/2 + windVec[1]), width=2)
+            if (perlinWind):
+                # draw wind vectors
+                if (showWindVectors):
+                    wind = (windVectors[x, y, 0], windVectors[x, y, 1])
+                    # normalize wind vector
+                    windSpeed = math.sqrt(wind[0]*wind[0] + wind[1]*wind[1])
+
+                    # draw wind vector
+                    if (windSpeed != 0.0):
+                        windVec = ((wind[0] / windSpeed) * cellSize/2, (wind[1] / windSpeed) * cellSize/2)
+                        pygame.draw.line(pollutionSurface, (0, 0, 255),
+                                (x * cellSize + cellSize/2, y * cellSize + cellSize/2),
+                                (x * cellSize + cellSize/2 + windVec[0], y * cellSize + cellSize/2 + windVec[1]), width=2)
     if (showGrid):
         # vertical lines
         for x in range(mapWidth):
