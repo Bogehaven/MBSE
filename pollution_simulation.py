@@ -31,11 +31,17 @@ buffers = np.zeros(shape=(mapWidth, mapHeight, 2))
 windVectors = np.zeros(shape=(mapWidth, mapHeight, 2))
 buffers[:, :, nextBuffer] = buffers[:, :, currentBuffer]
 
+# Load background image and scale it to map 
+backgroundImg = pygame.image.load('map.png')
+backgroundImg = pygame.transform.scale(backgroundImg, (mapWidth * cellSize, mapHeight * cellSize))
+
 # Create pygame window with no title
 pygame.display.set_caption('')
 pygame.init()
 screen = pygame.display.set_mode([600 + 32, 600 + 32])
 fontlog = pygame.font.SysFont('Menlo', 12)
+
+pollutionSurface = pygame.Surface( (mapWidth * cellSize, mapHeight * cellSize ), pygame.SRCALPHA )
 
 # Class to generate random wind based on x, y, time and uniform speed
 class WindGenerator:
@@ -94,6 +100,10 @@ while running:
     
     # clean screen with black color
     screen.fill((0, 0, 0))
+    pollutionSurface.fill((0, 0, 0, 0))
+
+    # Draw map in the background
+    screen.blit(backgroundImg, (0, 0))
 
     # switch buffer
     currentBuffer = nextBuffer
@@ -148,7 +158,7 @@ while running:
 
             # draw pollution in the current city area
             if (buffers[x, y, nextBuffer] != 0):
-                pygame.draw.rect(screen, (255 * min(1.0, buffers[x, y, currentBuffer]), 0, 0), (x * cellSize, y * cellSize, cellSize, cellSize))
+                pygame.draw.rect(pollutionSurface, (255 * min(1.0, buffers[x, y, currentBuffer]), 0, 0, 200 * min(1.0, buffers[x, y, currentBuffer])), (x * cellSize, y * cellSize, cellSize, cellSize))
 
             # draw wind vectors
             if (showWindVectors):
@@ -159,7 +169,7 @@ while running:
                 # draw wind vector
                 if (windSpeed != 0.0):
                     windVec = ((wind[0] / windSpeed) * cellSize/2, (wind[1] / windSpeed) * cellSize/2)
-                    pygame.draw.line(screen, (0, 0, 255),
+                    pygame.draw.line(pollutionSurface, (0, 0, 255),
                             (x * cellSize + cellSize/2, y * cellSize + cellSize/2),
                             (x * cellSize + cellSize/2 + windVec[0], y * cellSize + cellSize/2 + windVec[1]), width=2)
     if (showGrid):
@@ -179,6 +189,8 @@ while running:
     for x in range(mapWidth):
         for y in range(mapHeight):
             totalpolution += buffers[x, y, currentBuffer]
+    
+    screen.blit(pollutionSurface, (0, 0))
     
     # draw logging info
     logtext = fontlog.render('W:{} | H:{} | cell:{} | decay:{} | diff:{} | wind: {} | t: {} | totalp: {:.3f}'.format(mapWidth, mapHeight, cellSize, selfDecay, lateralDiffusion, windEnabled, t, totalpolution), False, (255, 255, 255))
