@@ -1,3 +1,5 @@
+SUMO simulation setup for Østerbro
+
 ### How to open
 Open `osm.sumocfg` in the SUMO GUI app
 
