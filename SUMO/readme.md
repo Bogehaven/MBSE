@@ -26,3 +26,5 @@ For example:  `python vehicle_dist.py 'osm.passenger.trip.xml' '{"gas": 0.6, "hy
 
 ### To-Do
 - Export emissions from SUMO to Python
+- Add different symbols for vehicle types
+- Change color of vehicles to reflect pollution
