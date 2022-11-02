@@ -11,3 +11,6 @@ class Vehicle:
 class TrafficManager:
     def __init__(self):
         self.vehicles = []
+
+    def addVehicle(self, x, y):
+        self.vehicles.append(Vehicle(x, y, 1.0))

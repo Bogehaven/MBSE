@@ -8,7 +8,7 @@ class PollutionSimulator:
         self.currentBuffer = 0
         self.nextBuffer = (self.currentBuffer == 0) * 1
         self.isPolutionContained = False
-        self.thermalDiffusion = 0.1
+        self.thermalDiffusion = 0.001 # 1.43 - 0.43 * math.log(100)
         self.selfDecay = 0.0
 
         # initialize with no pollution 
@@ -53,7 +53,7 @@ class PollutionSimulator:
 
         # compute lateral diffusion quantity
         diffusionAmount = (P * self.thermalDiffusion) / neightboursCount
-        self.buffers[x, y, self.nextBuffer] -= P * self.thermalDiffusion
+        self.buffers[x, y, self.nextBuffer] -=  P * self.thermalDiffusion
 
         # diffuse pollution
         self.buffers[max(x - 1, 0), y, self.nextBuffer] += diffusionAmount * neightbours[0]
@@ -69,7 +69,7 @@ class PollutionSimulator:
         return totalpolution
 
     def insertPollution(self, x, y, amount):
-        self.buffers[x, y, self.nextBuffer] = amount 
+        self.buffers[x, y, self.nextBuffer] += amount 
 
     def getPollution(self, x, y):
         return self.buffers[x, y, self.currentBuffer]

@@ -19,7 +19,7 @@ showWindVectors = True
 showGrid = False
 windEnabled = True
 isPolutionContained = False
-windSpeed = 0.1
+windSpeed = 0.001
 windPerlinNoiseStep = 2.0
 simulationPaused = False
 # ===========================
@@ -36,6 +36,7 @@ pygame.display.set_caption('')
 pygame.init()
 screen = pygame.display.set_mode([mapWidth * cellSize + 32, mapHeight * cellSize + 32])
 fontlog = pygame.font.SysFont('Menlo', 12)
+fontMouseInfo = pygame.font.SysFont('Menlo', 16)
 
 # Load background image and scale it to map 
 backgroundImg = pygame.image.load('map.png')
@@ -45,6 +46,7 @@ backgroundImg = pygame.transform.scale(backgroundImg, (mapWidth * cellSize, mapH
 pollutionSurface = pygame.Surface( (mapWidth * cellSize, mapHeight * cellSize ), pygame.SRCALPHA )
 
 # Choose what wind pattern we want to use
+"""
 print("Which wind pattern you would like to use ?")
 print("Press [1] for No wind")
 print("Press [2] for uniform wind")
@@ -59,9 +61,15 @@ elif readNum == '2':
     wind.makeUniform(angle=(random.random() * math.pi * 2), speed=windSpeed)
 elif readNum == '3':
     wind.makeRandom(windSpeed)
+"""
+
+carx = mapWidth * cellSize / 2 -8
+cary = 0
+direction = 0
 
 running = True
 t = 0;
+drawMaxvalue = 1.0
 while running:
 
     #Handle keyboard input and mouse input
@@ -93,9 +101,8 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if ((pos[0] < mapWidth * cellSize) and (pos[1] < mapHeight * cellSize)):  # mouse inside map
-                pollution.insertPollution(int(pos[0] / cellSize), int(pos[1] / cellSize), 50.0)
+                pollution.insertPollution(int(pos[0] / cellSize), int(pos[1] / cellSize), 2.0)
 
-    
     # clean screen with black color
     screen.fill((0, 0, 0))
     pollutionSurface.fill((0, 0, 0, 0))
@@ -110,6 +117,7 @@ while running:
     pollution.applySelfDecay();
 
     #Loop throw each city zone and update the pollution state + draw stuff
+    maxCellPollution = 0.0
     for x in range(mapWidth):
         for y in range(mapHeight):
             
@@ -124,8 +132,9 @@ while running:
 
             # draw pollution in the current city area
             P = pollution.getPollution(x, y)
+            maxCellPollution = max(maxCellPollution, P)
             if (P != 0):
-                pygame.draw.rect(pollutionSurface, (255 * min(1.0, P), 0, 0, 200 * min(1.0, P)), (x * cellSize, y * cellSize, cellSize, cellSize))
+                pygame.draw.rect(pollutionSurface, (255 * min(1.0, P), 0, 0, 200 * min(1.0, P / (drawMaxvalue * 0.8))), (x * cellSize, y * cellSize, cellSize, cellSize))
 
             # draw wind vectors
             if (showWindVectors):
@@ -154,6 +163,32 @@ while running:
 
     # Compute total current pollution in the map (just for debugging) 
     totalpolution = pollution.computeTotalPollution()
+    drawMaxvalue = maxCellPollution
+    
+    # Car modeling
+    if (direction == 0):
+        cary += 1.0
+    else:
+        cary -= 1.0
+    if (cary >= mapHeight * cellSize):
+        direction = 1
+    elif (cary <= -1):
+        direction = 0
+
+    pollution.insertPollution(int(min(max(0, carx / cellSize), mapWidth-1)), int(min(max(0, cary / cellSize), mapHeight-1)), 0.1)
+    pygame.draw.rect(pollutionSurface, (255, 255, 0), (carx-4, cary-4, 8, 8))
+
+    mousepos = pygame.mouse.get_pos()
+    if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
+        pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
+        P = pollution.getPollution(int(mousepos[0] / cellSize), int(mousepos[1] / cellSize))
+        windVec = wind.getVec(int(mousepos[0]/cellSize), int(mousepos[1]/cellSize))
+        W = math.sqrt(windVec[0]*windVec[0] + windVec[1]*windVec[1])
+        pollutionIndicator = fontMouseInfo.render("P: {:.3f}".format(P), False, (255, 255, 255))
+        windIndicator = fontMouseInfo.render("W: {:.3f}".format(W), False, (255, 255, 255))
+        pollutionSurface.blit(pollutionIndicator, (mousepos[0]+16, mousepos[1]-16))
+        pollutionSurface.blit(windIndicator, (mousepos[0]+16, mousepos[1]))
+
 
     # Draw pollution info over the map 
     screen.blit(pollutionSurface, (0, 0))
