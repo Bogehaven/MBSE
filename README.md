@@ -20,6 +20,7 @@ Possible interactions:
 - L key: change thermal diffusion value
 - W key: enable/disable wind
 - P key: pause simualtion
+- B key: show/hide background map image
 
 TODO
 ========================
