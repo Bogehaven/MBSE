@@ -63,13 +63,20 @@ elif readNum == '3':
     wind.makeRandom(windSpeed)
 """
 
+#show a car in the map
 carx = mapWidth * cellSize / 2 -8
 cary = 0
 direction = 0
 
 running = True
-t = 0;
+t = 0
 drawMaxvalue = 1.0
+
+insert_time=10000000000
+graph_measure_time=17
+i_x = 0
+i_y = 0
+
 while running:
 
     #Handle keyboard input and mouse input
@@ -90,6 +97,8 @@ while running:
                 selfDecayValues = np.roll(selfDecayValues, -1)
             if event.key == pygame.K_l:
                 pollution.thermalDiffusion = lateralDiffusionValues[0]
+                #np.roll() will choose different number in the list to apply
+                #if it goes to the end, it will return to the beginning
                 lateralDiffusionValues = np.roll(lateralDiffusionValues, -1)
             if event.key == pygame.K_g:
                 showGrid = not showGrid
@@ -101,7 +110,13 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if ((pos[0] < mapWidth * cellSize) and (pos[1] < mapHeight * cellSize)):  # mouse inside map
-                pollution.insertPollution(int(pos[0] / cellSize), int(pos[1] / cellSize), 2.0)
+                pollution.insertPollution(int(pos[0] / cellSize), int(pos[1] / cellSize), 50.0)
+                #inserted pollution is 2.0(it can be changed)
+                insert_time=t
+                i_x = int(pos[0] / cellSize)
+                i_y = int(pos[1] / cellSize)
+                print(insert_time)
+                print(i_x,i_y)
 
     # clean screen with black color
     screen.fill((0, 0, 0))
@@ -135,6 +150,7 @@ while running:
             maxCellPollution = max(maxCellPollution, P)
             if (P != 0):
                 pygame.draw.rect(pollutionSurface, (255 * min(1.0, P), 0, 0, 200 * min(1.0, P / (drawMaxvalue * 0.8))), (x * cellSize, y * cellSize, cellSize, cellSize))
+            #pygame.draw.rect(): draw a rectangle
 
             # draw wind vectors
             if (showWindVectors):
@@ -165,7 +181,7 @@ while running:
     totalpolution = pollution.computeTotalPollution()
     drawMaxvalue = maxCellPollution
     
-    # Car modeling
+    # Car modeling(let the car move from up to the down, and reverse the path)
     if (direction == 0):
         cary += 1.0
     else:
@@ -179,6 +195,8 @@ while running:
     pygame.draw.rect(pollutionSurface, (255, 255, 0), (carx-4, cary-4, 8, 8))
 
     mousepos = pygame.mouse.get_pos()
+
+    #show the pollution and the wind speed of each grid that the mouse stands
     if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
         pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
         P = pollution.getPollution(int(mousepos[0] / cellSize), int(mousepos[1] / cellSize))
@@ -188,7 +206,6 @@ while running:
         windIndicator = fontMouseInfo.render("W: {:.3f}".format(W), False, (255, 255, 255))
         pollutionSurface.blit(pollutionIndicator, (mousepos[0]+16, mousepos[1]-16))
         pollutionSurface.blit(windIndicator, (mousepos[0]+16, mousepos[1]))
-
 
     # Draw pollution info over the map 
     screen.blit(pollutionSurface, (0, 0))
@@ -205,4 +222,22 @@ while running:
     if (simulationPaused == False):
         t += 1
 
+    if t == insert_time + graph_measure_time:
+        print(t)
+        print(i_x,i_y)
+
+        # pollution.showThermalDiffusionGraghHorizontal_time(i_x, i_y)
+        pollution.showThermalDiffusionGraghHorizontal_percentage_time(i_x,i_y)
+
+
 pygame.quit()
+
+
+# need to do(with the wind vector):
+# make a new function
+# set time=20s(the number of while is 20 or another number)
+# get the pollution number on each grid(horizontal)
+# draw a graph to show the decay will transfer to its neighbors
+# and then, we can change the selfdecay and diffusion rate to let it fit the paper
+
+
