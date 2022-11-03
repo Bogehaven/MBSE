@@ -9,7 +9,7 @@ class PollutionSimulator:
         self.nextBuffer = (self.currentBuffer == 0) * 1
         self.isPolutionContained = False
         self.thermalDiffusion = 0.001 # 1.43 - 0.43 * math.log(100)
-        self.selfDecay = 0.0
+        self.selfDecay = 0.0003
 
         # initialize with no pollution 
         self.buffers = np.zeros(shape=(mapWidth, mapHeight, 2))

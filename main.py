@@ -17,6 +17,7 @@ selfDecayValues = np.array([0.001, 0.01, 0.0])
 lateralDiffusionValues = np.array([0.9, 0.01, 0.1])
 showWindVectors = True
 showGrid = False
+showBackgroundMap = True
 windEnabled = True
 isPolutionContained = False
 windSpeed = 0.001
@@ -95,6 +96,8 @@ while running:
                 showGrid = not showGrid
             if event.key == pygame.K_w:
                 windEnabled = not windEnabled
+            if event.key == pygame.K_b:
+                showBackgroundMap = not showBackgroundMap
             if event.key == pygame.K_p:
                 simulationPaused = not simulationPaused
 
@@ -108,7 +111,8 @@ while running:
     pollutionSurface.fill((0, 0, 0, 0))
 
     # Draw map in the background
-    screen.blit(backgroundImg, (0, 0))
+    if (showBackgroundMap):
+        screen.blit(backgroundImg, (0, 0))
 
     # switch buffer
     pollution.swapBuffer();
