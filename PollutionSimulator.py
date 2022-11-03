@@ -113,8 +113,8 @@ class PollutionSimulator:
             y_val=1.45-0.45*np.log10(x_paper[i])
             y_paper.append(y_val)
 
-        plot1=plt.plot(x, percentage_list, '-o', label='Original datas',color='red', linewidth=1)
-        plot2=plt.plot(x_paper, y_paper, '--', label='Paper function', color='blue', linewidth=1)
+        plot1=plt.plot(x, percentage_list, 'o', label='Our simulation',color='red', linewidth=1)
+        plot2=plt.plot(x_paper, y_paper, '--', label='The function in the paper', color='blue', linewidth=1)
         plt.legend(loc=1)
 
         plt.title('Diffusion_percentage')

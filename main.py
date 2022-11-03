@@ -110,7 +110,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if ((pos[0] < mapWidth * cellSize) and (pos[1] < mapHeight * cellSize)):  # mouse inside map
-                pollution.insertPollution(int(pos[0] / cellSize), int(pos[1] / cellSize), 50.0)
+                pollution.insertPollution(int(pos[0] / cellSize), int(pos[1] / cellSize), 20.0)
                 #inserted pollution is 2.0(it can be changed)
                 insert_time=t
                 i_x = int(pos[0] / cellSize)
