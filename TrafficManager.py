@@ -1,11 +1,13 @@
+import pygame
 
 class Vehicle():
-    def __init__(self, x, y, speed,Energy_type,Vehicle_type):
+    def __init__(self, x, y, speed,Energy_type,Vehicle_type,Vehicle_id):
         self.x = x
         self.y = y
         self.speed = speed
         self.energy=Energy_type
         self.vehicle=Vehicle_type
+        self.id=Vehicle_id
 
 #to do(just for test)
         if self.energy=='Petrol':
@@ -54,8 +56,12 @@ class Vehicle():
 
 
 class TrafficManager:
-    def __init__(self):
+    def __init__(self,pollution,mapWidth,mapHeight,cellSize):
         self.vehicles = []
+        self.mapWidth=mapWidth
+        self.mapHeight=mapHeight
+        self.cellSize=cellSize
+        self.pollution=pollution
 
     def addVehicle(self, x, y,speed,Energy_type,Vehicle_type):
         vehicle=Vehicle()
@@ -67,15 +73,18 @@ class TrafficManager:
 
         self.vehicles.append(vehicle)
 
-    def DrawAllVehicles(self):#move to the main()?
+    def DrawAllVehicles(self,PollutionSurface):#move to the main()?
+        pollutionSurface=PollutionSurface
         for i in range(len(self.vehicles)):
             single_vehicle=self.vehicles[i]
-            self.UpdateAllVehicles(single_vehicle)
+            pygame.draw.rect(pollutionSurface, (255, 255, 0), (single_vehicle.x - 4, single_vehicle.y - 4, 8, 8))
 
-    def UpdateAllVehicles(self,PerVehicle):#SUMO output file(CSV/DATAFRAME) to python
-        pollution.insertPollution(int(min(max(0, PerVehicle.x / cellSize), mapWidth - 1)),
-                                  int(min(max(0, PerVehicle.y / cellSize), mapHeight - 1)), 0.1)
-        pygame.draw.rect(pollutionSurface, (255, 255, 0), (PerVehicle.x - 4, PerVehicle.y - 4, 8, 8))
+    def UpdateAllVehicles(self):#SUMO output file(CSV/DATAFRAME) to python
+        for i in range(len(self.vehicles)):
+            single_vehicle = self.vehicles[i]
+            OriginalPollution=single_vehicle.InsertPolltion
+            self.pollution.insertPollution(int(min(max(0, single_vehicle.x / self.cellSize), self.mapWidth - 1)),
+                                  int(min(max(0, single_vehicle.y / self.cellSize), self.mapHeight - 1)), OriginalPollution)
 
 
 
