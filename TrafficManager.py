@@ -63,13 +63,14 @@ class TrafficManager:
         self.cellSize=cellSize
         self.pollution=pollution
 
-    def addVehicle(self, x, y,speed,Energy_type,Vehicle_type):
+    def addVehicle(self, x, y,speed,Energy_type,Vehicle_type,Vehicle_id):
         vehicle=Vehicle()
         vehicle.x=x
         vehicle.y=y
         vehicle.speed=speed
         vehicle.energy=Energy_type
         vehicle.vehicle=Vehicle_type
+        vehicle.id=Vehicle_id
 
         self.vehicles.append(vehicle)
 
@@ -77,7 +78,8 @@ class TrafficManager:
         pollutionSurface=PollutionSurface
         for i in range(len(self.vehicles)):
             single_vehicle=self.vehicles[i]
-            pygame.draw.rect(pollutionSurface, (255, 255, 0), (single_vehicle.x - 4, single_vehicle.y - 4, 8, 8))
+            color=single_vehicle.color
+            pygame.draw.rect(pollutionSurface, color, (single_vehicle.x - 4, single_vehicle.y - 4, 8, 8))
 
     def UpdateAllVehicles(self):#SUMO output file(CSV/DATAFRAME) to python
         for i in range(len(self.vehicles)):
