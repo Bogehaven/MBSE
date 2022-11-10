@@ -1,89 +1,42 @@
 import pygame
+import pandas
 
-class Vehicle():
-    def __init__(self, x, y, speed,Energy_type,Vehicle_type,Vehicle_id):
-        self.x = x
-        self.y = y
-        self.speed = speed
-        self.energy=Energy_type
-        self.vehicle=Vehicle_type
-        self.id=Vehicle_id
-
-        #to do(just for test)
-        if self.energy=='Petrol':
-            if self.vehicle=='Passenger':
-                self.color='DarkSlateBlue'
-                self.InsertPolltion=10
-            elif self.vehicle=='Truck':
-                self.color='Blue'
-                self.InsertPolltion=11
-            elif self.vehicle == 'Bus':
-                self.color = 'DarkGoldenrod'
-                self.InsertPolltion = 12
-
-        elif self.energy=='Diesel':
-            if self.vehicle == 'Passenger':
-                self.color = 'SlateBlue'
-                self.InsertPolltion = 9
-            elif self.vehicle == 'Truck':
-                self.color = 'DodgerBlue'
-                self.InsertPolltion = 10
-            elif self.vehicle == 'Bus':
-                self.color = 'goldenrod'
-                self.InsertPolltion = 11
-
-        elif self.energy=='Hybrid':
-            if self.vehicle == 'Passenger':
-                self.color = 'MediumSlateBlue'
-                self.InsertPolltion = 8
-            elif self.vehicle == 'Truck':
-                self.color = 'DeepSkyBlue'
-                self.InsertPolltion = 9
-            elif self.vehicle == 'Bus':
-                self.color = 'LightGoldenrod'
-                self.InsertPolltion = 10
-
-        elif self.energy=='Electric':
-            if self.vehicle == 'Passenger':
-                self.color = 'LightSlateBlue'
-                self.InsertPolltion = 7
-            elif self.vehicle == 'Truck':
-                self.color = 'SkyBlue'
-                self.InsertPolltion = 8
-            elif self.vehicle == 'Bus':
-                self.color = 'LightYellow'
-                self.InsertPolltion = 9
-
-
-class TrafficManager:
-    def __init__(self,pollution,mapWidth,mapHeight,cellSize):
+class TrafficSimulator:
+    def __init__(self,sumodata_filename, pollution,mapWidth,mapHeight,cellSize):
         self.vehicles = []
         self.mapWidth=mapWidth
         self.mapHeight=mapHeight
         self.cellSize=cellSize
         self.pollution=pollution
+        
+        self.data = pandas.read_parquet(sumodata_filename)
+        self.min_x = self.data['x'].min()
+        self.max_x = self.data['x'].max()
+        self.min_y = self.data['y'].min()
+        self.max_y = self.data['y'].max()
+        self.center_x = (self.max_x + self.min_x) / 2  
+        self.center_y = (self.max_y + self.min_y) / 2
+        self.resolution = 11132.0 * 2 ##1 degree = 111.32km
+        self.long_coeff = 0.5
+        print(self.min_x)
+        print(self.min_y)
+        print(self.max_x)
+        print(self.max_y)
 
-    def addVehicle(self, x, y,speed,Energy_type,Vehicle_type,Vehicle_id):
-        vehicle=Vehicle()
-        vehicle.x=x
-        vehicle.y=y
-        vehicle.speed=speed
-        vehicle.energy=Energy_type
-        vehicle.vehicle=Vehicle_type
-        vehicle.id=Vehicle_id
+    def getDegreeToPixelCoordinates(self, vehicleX, vehicleY):
+        y = self.mapHeight * self.cellSize / 2 + -(vehicleY - self.center_y) * self.resolution
+        x = self.mapWidth * self.cellSize / 2 + (vehicleX - self.center_x) * self.long_coeff * self.resolution
+        return (x, y)
 
-        self.vehicles.append(vehicle)
+    def draw(self, t, pollutionSurface):#move to the main()?
+        vehicles = self.data[self.data['time'] == t]
+        for i, vehicle in vehicles.iterrows():
+            pixel_x, pixel_y = self.getDegreeToPixelCoordinates(vehicle.x, vehicle.y)
+            pygame.draw.rect(pollutionSurface, (255, 255, 0), (pixel_x - 4, pixel_y - 4, 8, 8))
 
-    def DrawAllVehicles(self,PollutionSurface):#move to the main()?
-        pollutionSurface=PollutionSurface
-        for i in range(len(self.vehicles)):
-            single_vehicle=self.vehicles[i]
-            color=single_vehicle.color
-            pygame.draw.rect(pollutionSurface, color, (single_vehicle.x - 4, single_vehicle.y - 4, 8, 8))
-
-    def UpdateAllVehicles(self):#SUMO output file(CSV/DATAFRAME) to python
-        for i in range(len(self.vehicles)):
-            single_vehicle = self.vehicles[i]
-            OriginalPollution=single_vehicle.InsertPolltion
-            self.pollution.insertPollution(int(min(max(0, single_vehicle.x / self.cellSize), self.mapWidth - 1)),
-                                           int(min(max(0, single_vehicle.y / self.cellSize), self.mapHeight - 1)), OriginalPollution)
+    def update(self, t):#SUMO output file(CSV/DATAFRAME) to python
+        vehicles = self.data[self.data['time'] == t]
+        for i, vehicle in vehicles.iterrows():
+            pixel_x, pixel_y = self.getDegreeToPixelCoordinates(vehicle.x, vehicle.y)
+            self.pollution.insertPollution(int(min(max(0, pixel_x / self.cellSize), self.mapWidth - 1)),
+                                           int(min(max(0, pixel_y / self.cellSize), self.mapHeight - 1)), vehicle.NOx / 100.0)

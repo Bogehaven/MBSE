@@ -3,6 +3,7 @@ import pygame
 import numpy as np
 from WindSimulator import WindSimulator
 from PollutionSimulator import PollutionSimulator
+from TrafficManager import TrafficSimulator
 import math
 import random
 
@@ -31,6 +32,11 @@ pollution = PollutionSimulator(mapWidth, mapHeight)
 # Create wind simulator
 wind = WindSimulator(mapWidth, mapHeight, windPerlinNoiseStep)
 wind.makeRandom(windSpeed)
+
+# Create traffic simulator
+print("Creating traffic simulator...")
+traffic = TrafficSimulator("./emissions.parquet", pollution, mapWidth, mapHeight, cellSize)
+print("Done")
 
 # Create pygame window with no title
 pygame.display.set_caption('')
@@ -63,10 +69,6 @@ elif readNum == '2':
 elif readNum == '3':
     wind.makeRandom(windSpeed)
 """
-
-carx = mapWidth * cellSize / 2 -8
-cary = 0
-direction = 0
 
 running = True
 t = 0;
@@ -168,20 +170,11 @@ while running:
     # Compute total current pollution in the map (just for debugging) 
     totalpolution = pollution.computeTotalPollution()
     drawMaxvalue = maxCellPollution
+
+    # Update traffic simulator
+    traffic.update(t)
+    traffic.draw(t, pollutionSurface)
     
-    # Car modeling
-    if (direction == 0):
-        cary += 1.0
-    else:
-        cary -= 1.0
-    if (cary >= mapHeight * cellSize):
-        direction = 1
-    elif (cary <= -1):
-        direction = 0
-
-    pollution.insertPollution(int(min(max(0, carx / cellSize), mapWidth-1)), int(min(max(0, cary / cellSize), mapHeight-1)), 0.1)
-    pygame.draw.rect(pollutionSurface, (255, 255, 0), (carx-4, cary-4, 8, 8))
-
     mousepos = pygame.mouse.get_pos()
     if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
         pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
