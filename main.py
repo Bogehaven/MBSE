@@ -120,7 +120,8 @@ while running:
     pollution.swapBuffer();
     
     # dissipate into the atmosphere / self decay
-    pollution.applySelfDecay();
+    if (simulationPaused == False):
+        pollution.applySelfDecay();
 
     #Loop throw each city zone and update the pollution state + draw stuff
     maxCellPollution = 0.0
@@ -174,7 +175,12 @@ while running:
     # Update traffic simulator
     traffic.update(t)
     traffic.draw(t, pollutionSurface)
-    
+
+    # Stop simulation when the traffic simulator is done
+    if (traffic.isSimulationDone()):
+        simulationPaused = True
+
+    # Draw mouse logging 
     mousepos = pygame.mouse.get_pos()
     if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
         pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
