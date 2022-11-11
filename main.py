@@ -35,7 +35,7 @@ wind.makeRandom(windSpeed)
 
 # Create traffic simulator
 print("Creating traffic simulator...")
-traffic = TrafficSimulator("./emissions.parquet", pollution, mapWidth, mapHeight, cellSize)
+traffic = TrafficSimulator("./osterbro.parquet", pollution, mapWidth, mapHeight, cellSize)
 print("Done")
 
 # Create pygame window with no title
