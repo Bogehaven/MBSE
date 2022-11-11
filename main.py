@@ -9,9 +9,11 @@ import random
 
 # parameters to play with
 # =========================
-mapWidth = 40
-mapHeight = 40
-cellSize = 17
+resolution = 100 #1 cell = 100m
+cellSize = int(resolution * 0.2)
+mapSizePixels = 680
+mapWidth = int(mapSizePixels / cellSize)
+mapHeight = int(mapSizePixels / cellSize)
 thremalDiffusion = 0.1
 selfDecay = 0.0
 selfDecayValues = np.array([0.001, 0.01, 0.0])
