@@ -7,6 +7,8 @@ from TrafficManager import TrafficSimulator
 import math
 import random
 
+random.seed(1)
+
 # parameters to play with
 # =========================
 resolution = 100 #1 cell = 100m
@@ -27,6 +29,8 @@ windSpeed = 0.001
 windPerlinNoiseStep = 2.0
 simulationPaused = True
 drawMouseInfo = True
+history_savefile = "./results_wind/pollution_history_trucks_ev20.csv"
+sampled_savefile = "./results_wind/pollution_sampled_trucks_ev20.csv"
 # ===========================
 
 # Create pollution simulator
@@ -41,7 +45,8 @@ wind.makeRandom(windSpeed)
 #traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_15.parquet", pollution, mapWidth, mapHeight, cellSize)
 #traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_20.parquet", pollution, mapWidth, mapHeight, cellSize)
 #traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_54.parquet", pollution, mapWidth, mapHeight, cellSize)
-traffic = TrafficSimulator("./processed/trucks/ev_54.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("./processed/trucks/ev_10.parquet", pollution, mapWidth, mapHeight, cellSize)
+traffic = TrafficSimulator("./processed/trucks/ev_20.parquet", pollution, mapWidth, mapHeight, cellSize)
 print("Done")
 
 # Create pygame window with no title
@@ -181,8 +186,8 @@ while running:
     # Stop simulation when the traffic simulator is done
     if (traffic.isSimulationDone() and simulationPaused == False):
         simulationPaused = True
-        np.savetxt('pollution_history.csv', np.array(pollutionHistory), delimiter=',')
-        np.savetxt('pollution_sampled.csv', np.array(pollutionSample), delimiter=',')
+        np.savetxt(history_savefile, np.array(pollutionHistory), delimiter=',')
+        np.savetxt(sampled_savefile, np.array(pollutionSample), delimiter=',')
 
     # Draw mouse logging 
     if (drawMouseInfo):
