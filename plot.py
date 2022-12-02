@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-basedir = "./results_nowind/"
+basedir = "./results_wind/"
 
 baseline = np.genfromtxt(basedir + 'pollution_history_cars_baseline.csv', delimiter=',')
 ev_10 = np.genfromtxt(basedir + 'pollution_history_cars_ev10.csv', delimiter=',')
@@ -26,8 +26,8 @@ plt.xlim([len(ev_59)/2, len(ev_59)])
 plt.ylim([150, 400])
 plt.title("Total NOx over time, no wind")
 plt.legend()
+#plt.savefig("./plots/win_total_pollution.png")
 plt.show()
-#plt.savefig("./plots/cooling_schedule.png")
 #plt.clf() #clear
 
 values = [baseline[-1], trucks_baseline[-1], ev_59[-1], trucks_ev_10[-1], trucks_ev_20[-1]]
@@ -38,8 +38,8 @@ plt.ylabel("Total NOx")
 plt.ylim([250, 350])
 plt.title("Total NOx at the end of each scenario, no wind")
 plt.legend()
+#plt.savefig("./plots/win_bars_total_pollution.png")
 plt.show()
-#plt.savefig("./plots/cooling_schedule.png")
 #plt.clf() #clear
 
 s_trucks_baseline = np.genfromtxt(basedir + 'pollution_sampled_trucks_baseline.csv', delimiter=',')
@@ -58,6 +58,7 @@ plt.xlabel("Timetep")
 plt.ylabel("Total NOx")
 plt.title("Total NOx over time, no wind")
 plt.legend()
+#plt.savefig("./plots/win_pollution_road.png")
 plt.show()
-#plt.savefig("./plots/cooling_schedule.png")
 #plt.clf() #clear
+
