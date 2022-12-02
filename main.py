@@ -25,7 +25,8 @@ windEnabled = True
 isPolutionContained = False
 windSpeed = 0.001
 windPerlinNoiseStep = 2.0
-simulationPaused = False
+simulationPaused = True
+drawMouseInfo = True
 # ===========================
 
 # Create pollution simulator
@@ -34,10 +35,13 @@ pollution = PollutionSimulator(mapWidth, mapHeight)
 # Create wind simulator
 wind = WindSimulator(mapWidth, mapHeight, windPerlinNoiseStep)
 wind.makeRandom(windSpeed)
-
-# Create traffic simulator
-print("Creating traffic simulator...")
-traffic = TrafficSimulator("./osterbro.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/baseline.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/trucks/baseline.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_10.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_15.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_20.parquet", pollution, mapWidth, mapHeight, cellSize)
+#traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_54.parquet", pollution, mapWidth, mapHeight, cellSize)
+traffic = TrafficSimulator("./processed/trucks/ev_54.parquet", pollution, mapWidth, mapHeight, cellSize)
 print("Done")
 
 # Create pygame window with no title
@@ -48,29 +52,15 @@ fontlog = pygame.font.SysFont('Menlo', 12)
 fontMouseInfo = pygame.font.SysFont('Menlo', 16)
 
 # Load background image and scale it to map 
-backgroundImg = pygame.image.load('map.png')
+#backgroundImg = pygame.image.load('map_osterbro_grayscale.png')
+backgroundImg = pygame.image.load('map_lyngby_grayscale.png')
 backgroundImg = pygame.transform.scale(backgroundImg, (mapWidth * cellSize, mapHeight * cellSize))
 
 # Make surface to render pollution on top of map
 pollutionSurface = pygame.Surface( (mapWidth * cellSize, mapHeight * cellSize ), pygame.SRCALPHA )
 
-# Choose what wind pattern we want to use
-"""
-print("Which wind pattern you would like to use ?")
-print("Press [1] for No wind")
-print("Press [2] for uniform wind")
-print("Press [3] for random perlin_noise wind")
-
-readNum = input()
-
-if readNum == '1':
-    wind.makeNoWind();
-elif readNum == '2':
-    # make uniform wind with random direction
-    wind.makeUniform(angle=(random.random() * math.pi * 2), speed=windSpeed)
-elif readNum == '3':
-    wind.makeRandom(windSpeed)
-"""
+pollutionSample = []
+pollutionHistory = []
 
 running = True
 t = 0;
@@ -172,27 +162,40 @@ while running:
 
     # Compute total current pollution in the map (just for debugging) 
     totalpolution = pollution.computeTotalPollution()
-    drawMaxvalue = maxCellPollution
+    if (simulationPaused == False):
+        pollutionHistory.append(totalpolution)
+        if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
+            pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
+            P = pollution.getPollution(int(mousepos[0] / cellSize), int(mousepos[1] / cellSize))
+        else:
+            P = 0.0
+        pollutionSample.append(P)
+
+    drawMaxvalue = max(maxCellPollution, 1.0)
 
     # Update traffic simulator
-    traffic.update(t)
+    if (simulationPaused == False):
+        traffic.update(t)
     traffic.draw(t, pollutionSurface)
 
     # Stop simulation when the traffic simulator is done
-    if (traffic.isSimulationDone()):
+    if (traffic.isSimulationDone() and simulationPaused == False):
         simulationPaused = True
+        np.savetxt('pollution_history.csv', np.array(pollutionHistory), delimiter=',')
+        np.savetxt('pollution_sampled.csv', np.array(pollutionSample), delimiter=',')
 
     # Draw mouse logging 
-    mousepos = pygame.mouse.get_pos()
-    if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
-        pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
-        P = pollution.getPollution(int(mousepos[0] / cellSize), int(mousepos[1] / cellSize))
-        windVec = wind.getVec(int(mousepos[0]/cellSize), int(mousepos[1]/cellSize))
-        W = math.sqrt(windVec[0]*windVec[0] + windVec[1]*windVec[1])
-        pollutionIndicator = fontMouseInfo.render("P: {:.3f}".format(P), False, (255, 255, 255))
-        windIndicator = fontMouseInfo.render("W: {:.3f}".format(W), False, (255, 255, 255))
-        pollutionSurface.blit(pollutionIndicator, (mousepos[0]+16, mousepos[1]-16))
-        pollutionSurface.blit(windIndicator, (mousepos[0]+16, mousepos[1]))
+    if (drawMouseInfo):
+        mousepos = pygame.mouse.get_pos()
+        if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
+            pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
+            P = pollution.getPollution(int(mousepos[0] / cellSize), int(mousepos[1] / cellSize))
+            windVec = wind.getVec(int(mousepos[0]/cellSize), int(mousepos[1]/cellSize))
+            W = math.sqrt(windVec[0]*windVec[0] + windVec[1]*windVec[1])
+            pollutionIndicator = fontMouseInfo.render("P: {:.3f}".format(P), False, (255, 255, 255))
+            windIndicator = fontMouseInfo.render("W: {:.3f}".format(W), False, (255, 255, 255))
+            pollutionSurface.blit(pollutionIndicator, (mousepos[0]+16, mousepos[1]-16))
+            pollutionSurface.blit(windIndicator, (mousepos[0]+16, mousepos[1]))
 
 
     # Draw pollution info over the map 
