@@ -1,0 +1,55 @@
+
+CARS:
+BASELINE
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.928, "veh_diesel": 0.0, "veh_ev": 0.072}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 1.0, "truck_hybrid": 0.0}'
+sumo -c osm.sumocfg --emission-output outputs/cars/baseline.xml --step-length 1.0 -b 0 -e 7200
+
+ev 10%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.9, "veh_diesel": 0.0, "veh_ev": 0.10}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 1.0, "truck_hybrid": 0.0}'
+sumo -c osm.sumocfg --emission-output outputs/cars/ev_10.xml --step-length 1.0 -b 0 -e 7200
+
+ev 15%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.85, "veh_diesel": 0.0, "veh_ev": 0.15}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 1.0, "truck_hybrid": 0.0}'
+sumo -c osm.sumocfg --emission-output outputs/cars/ev_15.xml --step-length 1.0 -b 0 -e 7200
+
+ev 20%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.85, "veh_diesel": 0.0, "veh_ev": 0.20}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 1.0, "truck_hybrid": 0.0}'
+sumo -c osm.sumocfg --emission-output outputs/cars/ev_20.xml --step-length 1.0 -b 0 -e 7200
+
+ev 54%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.46, "veh_diesel": 0.0, "veh_ev": 0.54}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 1.0, "truck_hybrid": 0.0}'
+sumo -c osm.sumocfg --emission-output outputs/cars/ev_54.xml --step-length 1.0 -b 0 -e 7200
+
+
+
+
+TRUCKS:
+BASELINE
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.928, "veh_diesel": 0.0, "veh_ev": 0.072}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 1.0, "truck_hybrid": 0.0}'
+sumo -c osm.sumocfg --emission-output outputs/trucks/baseline.xml --step-length 1.0 -b 0 -e 7200
+
+ev 5%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.928, "veh_diesel": 0.0, "veh_ev": 0.072}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 0.95, "truck_hybrid": 0.05}'
+sumo -c osm.sumocfg --emission-output outputs/trucks/ev_5.xml --step-length 1.0 -b 0 -e 7200
+
+ev 10%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.928, "veh_diesel": 0.0, "veh_ev": 0.072}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 0.90, "truck_hybrid": 0.10}'
+sumo -c osm.sumocfg --emission-output outputs/trucks/ev_10.xml --step-length 1.0 -b 0 -e 7200
+
+ev 15%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.928, "veh_diesel": 0.0, "veh_ev": 0.072}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 0.85, "truck_hybrid": 0.15}'
+sumo -c osm.sumocfg --emission-output outputs/trucks/ev_15.xml --step-length 1.0 -b 0 -e 7200
+
+ev 20%
+python vehicle_dist.py 'osm.passenger.trips.xml' '{"veh_petrol": 0.928, "veh_diesel": 0.0, "veh_ev": 0.072}'
+python vehicle_dist.py 'osm.truck.trips.xml' '{"truck_petrol": 0.8, "truck_hybrid": 0.2}'
+sumo -c osm.sumocfg --emission-output outputs/trucks/ev_20.xml --step-length 1.0 -b 0 -e 7200
