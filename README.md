@@ -1,5 +1,7 @@
 # MBSE
 
+## Folder Structure
+
 ```
 .
 ├── SUMO                        # SUMO Files
