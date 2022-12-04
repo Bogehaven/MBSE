@@ -1,15 +1,31 @@
 # MBSE
 
-Pollution Simulation dependencies
-=======================
+```
+.
+├── SUMO                        # SUMO Files
+│   ├── Lyngby                  # SUMO simulation files for Lyngby (2 hours)
+│   └── Lyngby_long             # SUMO simulation files for Lyngby (24 hours)
+├── Simulator                   # Main Simulation Files
+│   ├── main.py                 # Simulation Script
+│   ├── PollutionSimulator.py   # Pollution Implementation 
+│   ├── TrafficManager.py       # Convert SUMO traffic to pyGame traffic
+│   └── WindSimulator.py        # Wind Implementation
+└── 
+```
+
+## Simulator Documentation
+
+### Pollution Simulation dependencies
 - pygame
 - numpy
 - perlin_noise
 
-Pollution Simulation instructions
-=======================
-Run main.py to execute the simulator. \
-Possible interactions:
+### How to run the simulation
+1. Make sure dependencies are installed (`pip3 install pygame, numpy, perlin_noise`)
+2. From the command line inside the "Simulator" directory, run `python3 main.py`
+
+### Pollution Simulation instructions
+**Possible interactions:**
 - Right click: add pollution
 - E key: generate random wind with perlin noise
 - U key: generate uniform wind
@@ -22,12 +38,5 @@ Possible interactions:
 - P key: pause simualtion
 - B key: show/hide background map image
 
-TODO
-========================
-- Export data about position and speed at each timestep for each vehicle using SUMO
-- Load this data with python in the simulator
-- Insert pollution using this data and draw vehicles it over the map (as little dots)
-- Tune parameters so it is realistic
-- Try different scenarios
 
 
