@@ -28,8 +28,3 @@ Run it from command line: `python vehicle_dist.py '<filename>' '<dictionary_cont
 ### Documentations
 - SUMO Emissions: https://github.com/eclipse/sumo/blob/main/docs/web/docs/Models/Emissions.md
 - SUMO Emission Types: https://github.com/eclipse/sumo/blob/main/docs/web/docs/Models/Emissions/HBEFA4-based.md
-
-### To-Do
-- Export emissions from SUMO to Python
-- Add different symbols for vehicle types
-- Change color of vehicles to reflect pollution
