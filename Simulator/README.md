@@ -22,12 +22,4 @@ Possible interactions:
 - P key: pause simualtion
 - B key: show/hide background map image
 
-TODO
-========================
-- Export data about position and speed at each timestep for each vehicle using SUMO
-- Load this data with python in the simulator
-- Insert pollution using this data and draw vehicles it over the map (as little dots)
-- Tune parameters so it is realistic
-- Try different scenarios
-
 

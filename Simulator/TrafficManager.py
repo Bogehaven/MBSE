@@ -10,8 +10,8 @@ class TrafficSimulator:
         self.pollution=pollution
         self.simulationDone = False
         self.scaleFactor = 0.2
-        self.y_offset = mapHeight * cellSize -58;
-        self.x_offset = 118
+        self.y_offset = mapHeight * cellSize + 8;
+        self.x_offset = -138
 
         self.data = pandas.read_parquet(sumodata_filename)
         self.min_x = self.data['x'].min()
@@ -22,8 +22,8 @@ class TrafficSimulator:
         # print(self.types)
 
         self.timesteps = []
-        for t in range(int(self.data['timedelta'].unique().max())):
-            self.timesteps.append(self.data[self.data['timedelta'] == t])
+        for t in range(int(self.data['time'].unique().max())):
+            self.timesteps.append(self.data[self.data['time'] == t])
 
     def getVehicleColor(self,vehicle):
         ColorMap={

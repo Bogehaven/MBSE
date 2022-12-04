@@ -27,10 +27,11 @@ windEnabled = True
 isPolutionContained = False
 windSpeed = 0.001
 windPerlinNoiseStep = 2.0
-simulationPaused = True
+simulationPaused = False
 drawMouseInfo = True
 history_savefile = "./results_wind/pollution_history_trucks_ev20.csv"
 sampled_savefile = "./results_wind/pollution_sampled_trucks_ev20.csv"
+saveResults = False
 # ===========================
 
 # Create pollution simulator
@@ -46,7 +47,7 @@ wind.makeRandom(windSpeed)
 #traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_20.parquet", pollution, mapWidth, mapHeight, cellSize)
 #traffic = TrafficSimulator("/Users/carlo/Downloads/Lyngby3/processed/cars/ev_54.parquet", pollution, mapWidth, mapHeight, cellSize)
 #traffic = TrafficSimulator("./processed/trucks/ev_10.parquet", pollution, mapWidth, mapHeight, cellSize)
-traffic = TrafficSimulator("./processed/trucks/ev_20.parquet", pollution, mapWidth, mapHeight, cellSize)
+traffic = TrafficSimulator("../SUMO/Lyngby/processed/trucks/ev_20.parquet", pollution, mapWidth, mapHeight, cellSize)
 print("Done")
 
 # Create pygame window with no title
@@ -169,6 +170,7 @@ while running:
     totalpolution = pollution.computeTotalPollution()
     if (simulationPaused == False):
         pollutionHistory.append(totalpolution)
+        mousepos = pygame.mouse.get_pos()
         if (mousepos[0] >= 0 and mousepos[1] >= 0 and (mousepos[0] < mapWidth * cellSize) and (mousepos[1] < mapHeight * cellSize)):  # mouse inside map
             pygame.draw.rect(pollutionSurface, (0, 0, 0, 150), (mousepos[0]+16 -2, mousepos[1]-16 +2, 96, 32))
             P = pollution.getPollution(int(mousepos[0] / cellSize), int(mousepos[1] / cellSize))
@@ -186,8 +188,9 @@ while running:
     # Stop simulation when the traffic simulator is done
     if (traffic.isSimulationDone() and simulationPaused == False):
         simulationPaused = True
-        np.savetxt(history_savefile, np.array(pollutionHistory), delimiter=',')
-        np.savetxt(sampled_savefile, np.array(pollutionSample), delimiter=',')
+        if (saveResults):
+            np.savetxt(history_savefile, np.array(pollutionHistory), delimiter=',')
+            np.savetxt(sampled_savefile, np.array(pollutionSample), delimiter=',')
 
     # Draw mouse logging 
     if (drawMouseInfo):
